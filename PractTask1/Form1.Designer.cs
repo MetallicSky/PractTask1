@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.colorDialogObjOutline = new System.Windows.Forms.ColorDialog();
             this.buttonObjOutline = new System.Windows.Forms.Button();
             this.buttonTrjClr = new System.Windows.Forms.Button();
@@ -57,7 +58,6 @@
             this.numericUpDownRotationDeg = new System.Windows.Forms.NumericUpDown();
             this.labelRotationDeg = new System.Windows.Forms.Label();
             this.labelClock = new System.Windows.Forms.Label();
-            this.comboBoxClock = new System.Windows.Forms.ComboBox();
             this.buttonObjInside = new System.Windows.Forms.Button();
             this.colorDialogObjInside = new System.Windows.Forms.ColorDialog();
             this.colorDialogTrjClr = new System.Windows.Forms.ColorDialog();
@@ -74,6 +74,8 @@
             this.numericUpDownBigRadius = new System.Windows.Forms.NumericUpDown();
             this.labelSmallRadius = new System.Windows.Forms.Label();
             this.numericUpDownSmallRadius = new System.Windows.Forms.NumericUpDown();
+            this.timerFPS = new System.Windows.Forms.Timer(this.components);
+            this.checkBoxClock = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarObjThk)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarTrjThk)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMin)).BeginInit();
@@ -195,6 +197,7 @@
             this.comboBoxTrjKind.Name = "comboBoxTrjKind";
             this.comboBoxTrjKind.Size = new System.Drawing.Size(121, 21);
             this.comboBoxTrjKind.TabIndex = 9;
+            this.comboBoxTrjKind.SelectedIndexChanged += new System.EventHandler(this.comboBoxTrjKind_SelectedIndexChanged);
             // 
             // checkBoxPulse
             // 
@@ -230,10 +233,11 @@
             this.numericUpDownMin.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownMin.TabIndex = 14;
             this.numericUpDownMin.Value = new decimal(new int[] {
-            100,
+            1,
             0,
             0,
             0});
+            this.numericUpDownMin.ValueChanged += new System.EventHandler(this.numericUpDownMin_ValueChanged);
             // 
             // numericUpDownMax
             // 
@@ -281,7 +285,7 @@
             this.numericUpDownStepsPerPulse.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownStepsPerPulse.TabIndex = 17;
             this.numericUpDownStepsPerPulse.Value = new decimal(new int[] {
-            1,
+            20,
             0,
             0,
             0});
@@ -308,6 +312,11 @@
             // numericUpDownStepsPerSec
             // 
             this.numericUpDownStepsPerSec.Location = new System.Drawing.Point(12, 339);
+            this.numericUpDownStepsPerSec.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
             this.numericUpDownStepsPerSec.Minimum = new decimal(new int[] {
             1,
             0,
@@ -317,10 +326,11 @@
             this.numericUpDownStepsPerSec.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownStepsPerSec.TabIndex = 20;
             this.numericUpDownStepsPerSec.Value = new decimal(new int[] {
-            60,
+            40,
             0,
             0,
             0});
+            this.numericUpDownStepsPerSec.ValueChanged += new System.EventHandler(this.numericUpDownStepsPerSec_ValueChanged);
             // 
             // labelRepeats
             // 
@@ -405,9 +415,19 @@
             0,
             0,
             0});
+            this.numericUpDownRotationDeg.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numericUpDownRotationDeg.Name = "numericUpDownRotationDeg";
             this.numericUpDownRotationDeg.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownRotationDeg.TabIndex = 27;
+            this.numericUpDownRotationDeg.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // labelRotationDeg
             // 
@@ -427,18 +447,6 @@
             this.labelClock.Size = new System.Drawing.Size(181, 13);
             this.labelClock.TabIndex = 29;
             this.labelClock.Text = "Движение объекта по траектории";
-            // 
-            // comboBoxClock
-            // 
-            this.comboBoxClock.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxClock.FormattingEnabled = true;
-            this.comboBoxClock.Items.AddRange(new object[] {
-            "По часовой",
-            "Против часовой"});
-            this.comboBoxClock.Location = new System.Drawing.Point(12, 518);
-            this.comboBoxClock.Name = "comboBoxClock";
-            this.comboBoxClock.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxClock.TabIndex = 30;
             // 
             // buttonObjInside
             // 
@@ -464,11 +472,12 @@
             // pictureBoxObj
             // 
             this.pictureBoxObj.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBoxObj.Location = new System.Drawing.Point(165, 331);
+            this.pictureBoxObj.Location = new System.Drawing.Point(488, 12);
             this.pictureBoxObj.Name = "pictureBoxObj";
-            this.pictureBoxObj.Size = new System.Drawing.Size(288, 285);
+            this.pictureBoxObj.Size = new System.Drawing.Size(300, 300);
             this.pictureBoxObj.TabIndex = 33;
             this.pictureBoxObj.TabStop = false;
+            this.pictureBoxObj.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBoxObj_Paint);
             // 
             // labelHeight
             // 
@@ -641,11 +650,29 @@
             0});
             this.numericUpDownSmallRadius.ValueChanged += new System.EventHandler(this.numericUpDownSmallRadius_ValueChanged);
             // 
+            // timerFPS
+            // 
+            this.timerFPS.Tick += new System.EventHandler(this.timerFPS_Tick);
+            // 
+            // checkBoxClock
+            // 
+            this.checkBoxClock.AutoSize = true;
+            this.checkBoxClock.Checked = true;
+            this.checkBoxClock.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxClock.Location = new System.Drawing.Point(12, 518);
+            this.checkBoxClock.Name = "checkBoxClock";
+            this.checkBoxClock.Size = new System.Drawing.Size(107, 17);
+            this.checkBoxClock.TabIndex = 45;
+            this.checkBoxClock.Text = "Против часовой";
+            this.checkBoxClock.UseVisualStyleBackColor = true;
+            this.checkBoxClock.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 665);
+            this.Controls.Add(this.checkBoxClock);
             this.Controls.Add(this.numericUpDownSmallRadius);
             this.Controls.Add(this.labelSmallRadius);
             this.Controls.Add(this.numericUpDownBigRadius);
@@ -659,7 +686,6 @@
             this.Controls.Add(this.labelHeight);
             this.Controls.Add(this.pictureBoxObj);
             this.Controls.Add(this.buttonObjInside);
-            this.Controls.Add(this.comboBoxClock);
             this.Controls.Add(this.labelClock);
             this.Controls.Add(this.labelRotationDeg);
             this.Controls.Add(this.numericUpDownRotationDeg);
@@ -747,7 +773,6 @@
         private System.Windows.Forms.NumericUpDown numericUpDownRotationDeg;
         private System.Windows.Forms.Label labelRotationDeg;
         private System.Windows.Forms.Label labelClock;
-        private System.Windows.Forms.ComboBox comboBoxClock;
         private System.Windows.Forms.Button buttonObjInside;
         private System.Windows.Forms.ColorDialog colorDialogObjInside;
         private System.Windows.Forms.ColorDialog colorDialogTrjClr;
@@ -764,6 +789,8 @@
         private System.Windows.Forms.NumericUpDown numericUpDownBigRadius;
         private System.Windows.Forms.Label labelSmallRadius;
         private System.Windows.Forms.NumericUpDown numericUpDownSmallRadius;
+        private System.Windows.Forms.Timer timerFPS;
+        private System.Windows.Forms.CheckBox checkBoxClock;
     }
 }
 
